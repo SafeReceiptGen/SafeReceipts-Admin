@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Store, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  Store,
+  LogOut,
+  Users,
+  ReceiptText,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -11,6 +17,8 @@ import { Button } from "@/components/ui/button";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/retailers", label: "Retailers", icon: Store },
+  { href: "/customers", label: "Customers", icon: Users },
+  { href: "/receipts", label: "Receipts", icon: ReceiptText },
 ];
 
 export function AppSidebar({

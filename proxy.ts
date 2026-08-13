@@ -6,7 +6,10 @@ export async function proxy(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
   const path = request.nextUrl.pathname;
   const isProtectedRoute =
-    path.startsWith("/dashboard") || path.startsWith("/retailers");
+    path.startsWith("/dashboard") ||
+    path.startsWith("/retailers") ||
+    path.startsWith("/customers") ||
+    path.startsWith("/receipts");
 
   // Only gate protected routes by cookie presence. Do NOT bounce /login →
   // /dashboard here: a retailer portal session cookie on localhost would
