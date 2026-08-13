@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Activity,
   LayoutDashboard,
   Store,
   LogOut,
   Users,
   ReceiptText,
+  ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
@@ -19,6 +21,8 @@ const navItems = [
   { href: "/retailers", label: "Retailers", icon: Store },
   { href: "/customers", label: "Customers", icon: Users },
   { href: "/receipts", label: "Receipts", icon: ReceiptText },
+  { href: "/audit-log", label: "Audit log", icon: ScrollText },
+  { href: "/platform-health", label: "Platform health", icon: Activity },
 ];
 
 export function AppSidebar({

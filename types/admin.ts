@@ -209,3 +209,56 @@ export interface AdminReceiptQr {
   receiptId: string;
   receiptNumber: string;
 }
+
+export type AdminAuditAction =
+  | "receipt.created"
+  | "return.requested"
+  | "return.approved"
+  | "return.rejected"
+  | "retailer.updated"
+  | "admin.retailer_status_updated"
+  | "admin.qr_revealed";
+
+export type AdminAuditEntityType = "receipt" | "return_request" | "retailer";
+
+export type AdminAuditActorType =
+  | "admin"
+  | "retailer_user"
+  | "customer"
+  | "system";
+
+export interface AdminAuditLog {
+  id: string;
+  createdAt: string;
+  action: AdminAuditAction | string;
+  actorId: string | null;
+  actorType: AdminAuditActorType | string;
+  actorLabel: string;
+  entityType: AdminAuditEntityType | string;
+  entityId: string;
+  entityLabel: string;
+  retailerId: string | null;
+  metadata: Record<string, unknown> | null;
+}
+
+export type PlatformHealthStatus = "healthy" | "warning" | "down";
+
+export type PlatformHealthServiceName =
+  | "api"
+  | "database"
+  | "receipt_generation"
+  | "email"
+  | "sms";
+
+export interface PlatformHealthService {
+  name: PlatformHealthServiceName | string;
+  status: PlatformHealthStatus;
+  latencyMs: number | null;
+  message: string;
+  checkedAt: string;
+}
+
+export interface PlatformHealthReport {
+  overall: PlatformHealthStatus;
+  services: PlatformHealthService[];
+}

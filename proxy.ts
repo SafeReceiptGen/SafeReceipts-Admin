@@ -9,7 +9,9 @@ export async function proxy(request: NextRequest) {
     path.startsWith("/dashboard") ||
     path.startsWith("/retailers") ||
     path.startsWith("/customers") ||
-    path.startsWith("/receipts");
+    path.startsWith("/receipts") ||
+    path.startsWith("/audit-log") ||
+    path.startsWith("/platform-health");
 
   // Only gate protected routes by cookie presence. Do NOT bounce /login →
   // /dashboard here: a retailer portal session cookie on localhost would

@@ -2,6 +2,7 @@
 
 import { serverRequest } from "./client";
 import type {
+  AdminAuditLog,
   AdminCustomerListItem,
   AdminCustomerProfile,
   AdminMetrics,
@@ -9,6 +10,7 @@ import type {
   AdminReceiptListItem,
   AdminReceiptQr,
   AdminRetailer,
+  PlatformHealthReport,
 } from "@/types/admin";
 
 export async function getAdminMetrics() {
@@ -102,4 +104,33 @@ export async function getAdminReceipt(id: string) {
 
 export async function getAdminReceiptQr(id: string) {
   return serverRequest<AdminReceiptQr>(`/admin/receipts/${id}/qr`);
+}
+
+export async function listAdminAuditLogs(params?: {
+  action?: string;
+  entityType?: string;
+  entityId?: string;
+  actorId?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const search = new URLSearchParams();
+  if (params?.action) search.set("action", params.action);
+  if (params?.entityType) search.set("entityType", params.entityType);
+  if (params?.entityId) search.set("entityId", params.entityId);
+  if (params?.actorId) search.set("actorId", params.actorId);
+  if (params?.from) search.set("from", params.from);
+  if (params?.to) search.set("to", params.to);
+  if (params?.page) search.set("page", String(params.page));
+  if (params?.limit) search.set("limit", String(params.limit));
+  const qs = search.toString();
+  return serverRequest<AdminAuditLog[]>(
+    `/admin/audit-logs${qs ? `?${qs}` : ""}`,
+  );
+}
+
+export async function getAdminPlatformHealth() {
+  return serverRequest<PlatformHealthReport>("/admin/health");
 }
