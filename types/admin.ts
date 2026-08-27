@@ -217,7 +217,8 @@ export type AdminAuditAction =
   | "return.rejected"
   | "retailer.updated"
   | "admin.retailer_status_updated"
-  | "admin.qr_revealed";
+  | "admin.qr_revealed"
+  | "admin.return_note_added";
 
 export type AdminAuditEntityType = "receipt" | "return_request" | "retailer";
 
@@ -239,6 +240,149 @@ export interface AdminAuditLog {
   entityLabel: string;
   retailerId: string | null;
   metadata: Record<string, unknown> | null;
+}
+
+export type AdminReturnTab = "pending" | "approved" | "rejected" | "completed";
+
+export interface AdminReturnTabCounts {
+  pending: number;
+  approved: number;
+  rejected: number;
+  completed: number;
+}
+
+export interface AdminReturnListItem {
+  id: string;
+  returnNumber: string;
+  status: string;
+  reasonCode: string | null;
+  reason: string | null;
+  description: string | null;
+  refundAmount: string | null;
+  createdAt: string;
+  receiptId: string;
+  receiptNumber: string;
+  retailerId: string;
+  retailerName: string;
+  storeId: string;
+  storeName: string;
+  customer: {
+    id: string | null;
+    name: string | null;
+    phone: string | null;
+    email: string | null;
+    encodedIdentityKey: string | null;
+  };
+}
+
+export interface AdminReturnNote {
+  id: string;
+  body: string;
+  createdAt: string;
+  author: {
+    id: string;
+    name: string | null;
+    email: string | null;
+  };
+}
+
+export interface AdminReturnTimelineEvent {
+  id: string;
+  type: string;
+  label: string;
+  at: string;
+  actorLabel: string | null;
+  metadata: Record<string, unknown> | null;
+}
+
+export interface AdminReturnDetail {
+  id: string;
+  returnNumber: string;
+  status: string;
+  reasonCode: string | null;
+  reason: string | null;
+  description: string | null;
+  rejectionReason: string | null;
+  refundType: string;
+  refundAmount: string | null;
+  serviceFee: string | null;
+  logisticsMethod: string | null;
+  logisticsPudoPointId: string | null;
+  logisticsTimeSlot: string | null;
+  logisticsPhone: string | null;
+  logisticsPhoneCountry: string | null;
+  pickupAddressLine1: string | null;
+  pickupAddressLine2: string | null;
+  pickupCity: string | null;
+  pickupRegion: string | null;
+  pickupPostalCode: string | null;
+  pickupLandmark: string | null;
+  parcelPackageCount: number | null;
+  parcelDescription: string | null;
+  parcelWeightKg: string | null;
+  eligibilityResult: boolean | null;
+  eligibilityCheckedAt: string | null;
+  eligibilitySnapshot: unknown;
+  reviewedAt: string | null;
+  collectedAt: string | null;
+  inTransitAt: string | null;
+  withRetailerAt: string | null;
+  resolvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  receipt: {
+    id: string;
+    receiptNumber: string;
+    date: string;
+    total: string;
+    currency: string;
+    status: string;
+  };
+  customer: {
+    id: string | null;
+    name: string | null;
+    phone: string | null;
+    email: string | null;
+    encodedIdentityKey: string | null;
+  };
+  retailer: {
+    id: string;
+    name: string;
+    isActive: boolean;
+  };
+  store: {
+    id: string;
+    name: string;
+    phone: string | null;
+    address: string | null;
+  };
+  items: Array<{
+    id: string;
+    lineItemId: string;
+    name: string;
+    detail: string | null;
+    quantityReturned: number;
+    unitPrice: string;
+    originalPrice: string;
+    refundAmount: string | null;
+  }>;
+  photos: Array<{
+    id: string;
+    url: string;
+    sortOrder: number;
+    createdAt: string;
+  }>;
+  payments: Array<{
+    id: string;
+    type: string;
+    amount: string;
+    status: string;
+    provider: string | null;
+    reference: string | null;
+    createdAt: string;
+  }>;
+  notes: AdminReturnNote[];
+  timeline: AdminReturnTimelineEvent[];
 }
 
 export type PlatformHealthStatus = "healthy" | "warning" | "down";

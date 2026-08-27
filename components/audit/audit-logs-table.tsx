@@ -35,6 +35,7 @@ const ACTION_OPTIONS = [
   { value: "retailer.updated", label: "Retailer updated" },
   { value: "admin.retailer_status_updated", label: "Admin retailer status" },
   { value: "admin.qr_revealed", label: "Admin QR revealed" },
+  { value: "admin.return_note_added", label: "Admin return note" },
 ] as const;
 
 const ENTITY_OPTIONS = [
@@ -66,6 +67,7 @@ function formatActorType(actorType: string) {
 function entityHref(entityType: string, entityId: string): string | null {
   if (entityType === "receipt") return `/receipts/${entityId}`;
   if (entityType === "retailer") return `/retailers/${entityId}`;
+  if (entityType === "return_request") return `/returns/${entityId}`;
   return null;
 }
 

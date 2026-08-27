@@ -387,7 +387,12 @@ export function ReceiptDetail({ id }: { id: string }) {
                 data.returns.map((ret) => (
                   <TableRow key={ret.id}>
                     <TableCell className="font-medium">
-                      {ret.returnNumber}
+                      <Link
+                        href={`/returns/${ret.id}`}
+                        className="text-primary hover:underline"
+                      >
+                        {ret.returnNumber}
+                      </Link>
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary">

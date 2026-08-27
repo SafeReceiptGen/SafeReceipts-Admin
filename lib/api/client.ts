@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 export type ServerRequestResult<T> =
-  | { error: false; data: T; totalCount?: number }
+  | { error: false; data: T; totalCount?: number; meta?: unknown }
   | {
       error: true;
       message: string;
@@ -59,6 +59,7 @@ export async function serverRequest<T>(
       data: json.data as T,
       totalCount:
         typeof json.total_count === "number" ? json.total_count : undefined,
+      meta: json.meta,
     };
   } catch (error: unknown) {
     return {

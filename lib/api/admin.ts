@@ -10,6 +10,9 @@ import type {
   AdminReceiptListItem,
   AdminReceiptQr,
   AdminRetailer,
+  AdminReturnDetail,
+  AdminReturnListItem,
+  AdminReturnNote,
   PlatformHealthReport,
 } from "@/types/admin";
 
@@ -104,6 +107,42 @@ export async function getAdminReceipt(id: string) {
 
 export async function getAdminReceiptQr(id: string) {
   return serverRequest<AdminReceiptQr>(`/admin/receipts/${id}/qr`);
+}
+
+export async function listAdminReturns(params?: {
+  q?: string;
+  tab?: string;
+  status?: string;
+  retailerId?: string;
+  from?: string;
+  to?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const search = new URLSearchParams();
+  if (params?.q) search.set("q", params.q);
+  if (params?.tab) search.set("tab", params.tab);
+  if (params?.status) search.set("status", params.status);
+  if (params?.retailerId) search.set("retailerId", params.retailerId);
+  if (params?.from) search.set("from", params.from);
+  if (params?.to) search.set("to", params.to);
+  if (params?.page) search.set("page", String(params.page));
+  if (params?.limit) search.set("limit", String(params.limit));
+  const qs = search.toString();
+  return serverRequest<AdminReturnListItem[]>(
+    `/admin/returns${qs ? `?${qs}` : ""}`,
+  );
+}
+
+export async function getAdminReturn(id: string) {
+  return serverRequest<AdminReturnDetail>(`/admin/returns/${id}`);
+}
+
+export async function addAdminReturnNote(id: string, body: string) {
+  return serverRequest<AdminReturnNote>(`/admin/returns/${id}/notes`, {
+    method: "POST",
+    body: JSON.stringify({ body }),
+  });
 }
 
 export async function listAdminAuditLogs(params?: {

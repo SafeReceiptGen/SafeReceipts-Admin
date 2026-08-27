@@ -342,7 +342,12 @@ export function CustomerDetail({ encodedKey }: { encodedKey: string }) {
                         {formatDate(ret.createdAt)}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {ret.returnNumber}
+                        <Link
+                          href={`/returns/${ret.id}`}
+                          className="text-primary hover:underline"
+                        >
+                          {ret.returnNumber}
+                        </Link>
                       </TableCell>
                       <TableCell>
                         <Link

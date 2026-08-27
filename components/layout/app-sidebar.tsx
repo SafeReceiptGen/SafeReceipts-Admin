@@ -9,6 +9,7 @@ import {
   LogOut,
   Users,
   ReceiptText,
+  RotateCcw,
   ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,6 +22,7 @@ const navItems = [
   { href: "/retailers", label: "Retailers", icon: Store },
   { href: "/customers", label: "Customers", icon: Users },
   { href: "/receipts", label: "Receipts", icon: ReceiptText },
+  { href: "/returns", label: "Returns", icon: RotateCcw },
   { href: "/audit-log", label: "Audit log", icon: ScrollText },
   { href: "/platform-health", label: "Platform health", icon: Activity },
 ];
