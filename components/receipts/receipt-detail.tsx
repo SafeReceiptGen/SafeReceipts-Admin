@@ -31,6 +31,7 @@ import {
   receiptQrQueryOptions,
   receiptQueryOptions,
 } from "@/lib/queries/receipts";
+import type { AdminReceiptDetail } from "@/types/admin";
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
@@ -52,6 +53,168 @@ function formatMoney(amount: string, currency: string) {
   })}`;
 }
 
+function itemRoleLabel(role: "remaining" | "replacement"): string {
+  switch (role) {
+    case "remaining":
+      return "Remaining";
+    case "replacement":
+      return "Replacement";
+    default: {
+      const exhaustive: never = role;
+      return exhaustive;
+    }
+  }
+}
+
+function adjustmentKindLabel(kind: "return" | "exchange"): string {
+  switch (kind) {
+    case "return":
+      return "Return receipt";
+    case "exchange":
+      return "Exchange receipt";
+    default: {
+      const exhaustive: never = kind;
+      return exhaustive;
+    }
+  }
+}
+
+function AdjustmentCard({ data }: { data: AdminReceiptDetail }) {
+  const adjustment = data.adjustment;
+  if (!adjustment) return null;
+  const latest = adjustment.adjustments[0];
+  const isAdjustment =
+    adjustment.originalReceipt != null && adjustment.kind != null;
+  if (!isAdjustment && !latest) return null;
+
+  const remaining = data.items.filter((item) => item.role === "remaining");
+  const replacements = data.items.filter((item) => item.role === "replacement");
+  const refund = Number(adjustment.refundAmount);
+  const additional = Number(adjustment.additionalPayment);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          {isAdjustment && adjustment.kind
+            ? adjustmentKindLabel(adjustment.kind)
+            : "Adjustment receipt"}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4 text-sm">
+        {isAdjustment && adjustment.originalReceipt ? (
+          <p>
+            Adjusts{" "}
+            <Link
+              href={`/receipts/${adjustment.originalReceipt.id}`}
+              className="font-medium text-primary hover:underline"
+            >
+              {adjustment.originalReceipt.receiptNumber}
+            </Link>
+          </p>
+        ) : null}
+
+        {adjustment.returnedItems.length > 0 ? (
+          <div className="space-y-1">
+            <p className="text-muted-foreground text-xs uppercase">Returned</p>
+            {adjustment.returnedItems.map((item) => (
+              <div
+                key={`${item.name}-${item.quantity}`}
+                className="flex justify-between gap-3"
+              >
+                <span>
+                  {item.name} × {item.quantity}
+                </span>
+                <span className="tabular-nums">
+                  {formatMoney(item.amount, data.currency)}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        {remaining.length > 0 ? (
+          <div className="space-y-1">
+            <p className="text-muted-foreground text-xs uppercase">Remaining</p>
+            {remaining.map((item) => (
+              <div key={item.id} className="flex justify-between gap-3">
+                <span>
+                  {item.name} × {item.quantity}
+                </span>
+                <span className="tabular-nums">
+                  {formatMoney(item.lineTotal, data.currency)}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        {replacements.length > 0 ? (
+          <div className="space-y-1">
+            <p className="text-muted-foreground text-xs uppercase">
+              Replacement
+            </p>
+            {replacements.map((item) => (
+              <div key={item.id} className="flex justify-between gap-3">
+                <span>
+                  {item.name} × {item.quantity}
+                </span>
+                <span className="tabular-nums">
+                  {formatMoney(item.lineTotal, data.currency)}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        {Number.isFinite(refund) && refund > 0 ? (
+          <div className="flex justify-between gap-3">
+            <span>Refund</span>
+            <span className="tabular-nums">
+              {formatMoney(adjustment.refundAmount, data.currency)}
+            </span>
+          </div>
+        ) : null}
+        {Number.isFinite(additional) && additional > 0 ? (
+          <div className="flex justify-between gap-3">
+            <span>Additional payment</span>
+            <span className="tabular-nums">
+              {formatMoney(adjustment.additionalPayment, data.currency)}
+            </span>
+          </div>
+        ) : null}
+        {isAdjustment ? (
+          <div className="flex justify-between gap-3 border-t pt-3 font-medium">
+            <span>Final total</span>
+            <span className="tabular-nums">
+              {formatMoney(data.total, data.currency)}
+            </span>
+          </div>
+        ) : null}
+
+        {latest ? (
+          <div className="space-y-1">
+            <p className="text-muted-foreground text-xs uppercase">
+              Adjustment receipts
+            </p>
+            {adjustment.adjustments.map((child) => (
+              <p key={child.id}>
+                <Link
+                  href={`/receipts/${child.id}`}
+                  className="font-medium text-primary hover:underline"
+                >
+                  {adjustmentKindLabel(child.adjustmentKind)}{" "}
+                  {child.receiptNumber}
+                </Link>
+              </p>
+            ))}
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
+
 function paymentBadgeVariant(
   status: string,
 ): "success" | "warning" | "secondary" {
@@ -63,10 +226,40 @@ function paymentBadgeVariant(
 function statusBadgeVariant(
   status: string,
 ): "success" | "warning" | "destructive" | "secondary" {
-  if (status === "issued") return "success";
+  if (status === "issued" || status === "return_completed") return "success";
   if (status === "voided") return "destructive";
-  if (status === "returned") return "warning";
+  if (status === "returned" || status === "return_requested") return "warning";
   return "secondary";
+}
+
+function formatReceiptStatus(status: string) {
+  const labels: Record<string, string> = {
+    issued: "Active",
+    voided: "Voided",
+    returned: "Return completed",
+    return_requested: "Return requested",
+    return_completed: "Completed — return processed",
+    adjustment: "Adjustment receipt",
+  };
+  return labels[status] ?? status.replaceAll("_", " ");
+}
+
+function formatReturnStatus(status: string) {
+  const labels: Record<string, string> = {
+    pending: "Pending review",
+    pickup_scheduled: "Pickup scheduled",
+    approved: "Approved",
+    rejected: "Rejected",
+    cancelled: "Cancelled",
+    collected: "Collected",
+    in_transit: "In transit",
+    with_retailer: "Item received",
+    refunded: "Refund processed",
+    refund_completed: "Refund processed",
+    exchange_completed: "Exchange processed",
+    completed: "Completed",
+  };
+  return labels[status] ?? status.replaceAll("_", " ");
 }
 
 export function ReceiptDetail({ id }: { id: string }) {
@@ -122,7 +315,7 @@ export function ReceiptDetail({ id }: { id: string }) {
             </p>
           </div>
           <Badge variant={statusBadgeVariant(data.status)}>
-            {data.status}
+            {formatReceiptStatus(data.status)}
           </Badge>
         </CardHeader>
         <CardContent>
@@ -201,9 +394,13 @@ export function ReceiptDetail({ id }: { id: string }) {
         </CardContent>
       </Card>
 
+      <AdjustmentCard data={data} />
+
       <Card>
         <CardHeader>
-          <CardTitle>Purchased items</CardTitle>
+          <CardTitle>
+            {data.adjustment?.kind ? "Items on this receipt" : "Purchased items"}
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
@@ -227,6 +424,11 @@ export function ReceiptDetail({ id }: { id: string }) {
                         <div className="text-muted-foreground text-xs">
                           {item.detail}
                         </div>
+                      ) : null}
+                      {item.role === "remaining" || item.role === "replacement" ? (
+                        <Badge variant="secondary" className="mt-1">
+                          {itemRoleLabel(item.role)}
+                        </Badge>
                       ) : null}
                       {discounted && item.discountReason ? (
                         <Badge variant="secondary" className="mt-1">
@@ -396,7 +598,7 @@ export function ReceiptDetail({ id }: { id: string }) {
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary">
-                        {ret.status.replaceAll("_", " ")}
+                        {formatReturnStatus(ret.status)}
                       </Badge>
                     </TableCell>
                     <TableCell>

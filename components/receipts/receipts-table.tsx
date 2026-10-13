@@ -37,6 +37,24 @@ function formatDate(iso: string) {
   });
 }
 
+function formatReturnStatus(status: string) {
+  const labels: Record<string, string> = {
+    pending: "Pending review",
+    pickup_scheduled: "Pickup scheduled",
+    approved: "Approved",
+    rejected: "Rejected",
+    cancelled: "Cancelled",
+    collected: "Collected",
+    in_transit: "In transit",
+    with_retailer: "Item received",
+    refunded: "Refund processed",
+    refund_completed: "Refund processed",
+    exchange_completed: "Exchange processed",
+    completed: "Completed",
+  };
+  return labels[status] ?? status.replaceAll("_", " ");
+}
+
 function formatMoney(amount: string, currency: string) {
   const n = Number(amount);
   if (Number.isNaN(n)) return `${currency} ${amount}`;
@@ -161,14 +179,19 @@ export function ReceiptsTable() {
             void resetPage();
           }}
         >
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-[220px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All statuses</SelectItem>
-            <SelectItem value="issued">Issued</SelectItem>
+            <SelectItem value="issued">Active</SelectItem>
+            <SelectItem value="return_requested">Return requested</SelectItem>
+            <SelectItem value="return_completed">
+              Completed — return processed
+            </SelectItem>
+            <SelectItem value="adjustment">Adjustment receipt</SelectItem>
+            <SelectItem value="returned">Return completed (legacy)</SelectItem>
             <SelectItem value="voided">Voided</SelectItem>
-            <SelectItem value="returned">Returned</SelectItem>
           </SelectContent>
         </Select>
 
@@ -229,6 +252,9 @@ export function ReceiptsTable() {
             <SelectItem value="approved">Approved</SelectItem>
             <SelectItem value="rejected">Rejected</SelectItem>
             <SelectItem value="completed">Completed</SelectItem>
+            <SelectItem value="refund_completed">Refund processed</SelectItem>
+            <SelectItem value="exchange_completed">Exchange processed</SelectItem>
+            <SelectItem value="with_retailer">Item received</SelectItem>
           </SelectContent>
         </Select>
 
@@ -342,10 +368,7 @@ export function ReceiptsTable() {
                     <TableCell>
                       {receipt.returnSummary ? (
                         <Badge variant="secondary">
-                          {receipt.returnSummary.latestStatus.replaceAll(
-                            "_",
-                            " ",
-                          )}
+                          {formatReturnStatus(receipt.returnSummary.latestStatus)}
                         </Badge>
                       ) : (
                         <span className="text-muted-foreground text-sm">—</span>

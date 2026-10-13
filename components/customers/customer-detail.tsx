@@ -44,6 +44,24 @@ function paymentBadgeVariant(
   return "secondary";
 }
 
+function formatReturnStatus(status: string) {
+  const labels: Record<string, string> = {
+    pending: "Pending review",
+    pickup_scheduled: "Pickup scheduled",
+    approved: "Approved",
+    rejected: "Rejected",
+    cancelled: "Cancelled",
+    collected: "Collected",
+    in_transit: "In transit",
+    with_retailer: "Item received",
+    refunded: "Refund processed",
+    refund_completed: "Refund processed",
+    exchange_completed: "Exchange processed",
+    completed: "Completed",
+  };
+  return labels[status] ?? status.replaceAll("_", " ");
+}
+
 export function CustomerDetail({ encodedKey }: { encodedKey: string }) {
   const { data, isLoading, isError, error } = useQuery(
     customerQueryOptions(encodedKey),
@@ -293,9 +311,8 @@ export function CustomerDetail({ encodedKey }: { encodedKey: string }) {
                       <TableCell>
                         {receipt.returnSummary ? (
                           <Badge variant="secondary">
-                            {receipt.returnSummary.latestStatus.replaceAll(
-                              "_",
-                              " ",
+                            {formatReturnStatus(
+                              receipt.returnSummary.latestStatus,
                             )}
                           </Badge>
                         ) : (

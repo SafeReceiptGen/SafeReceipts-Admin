@@ -50,8 +50,18 @@ const STATUS_OPTIONS = [
   { value: "cancelled", label: "Cancelled", tab: "rejected" as const },
   { value: "collected", label: "Collected", tab: "completed" as const },
   { value: "in_transit", label: "In transit", tab: "completed" as const },
-  { value: "with_retailer", label: "With retailer", tab: "completed" as const },
-  { value: "refunded", label: "Refunded", tab: "completed" as const },
+  { value: "with_retailer", label: "Item received", tab: "completed" as const },
+  { value: "refunded", label: "Refund processed", tab: "completed" as const },
+  {
+    value: "refund_completed",
+    label: "Refund processed",
+    tab: "completed" as const,
+  },
+  {
+    value: "exchange_completed",
+    label: "Exchange processed",
+    tab: "completed" as const,
+  },
   { value: "completed", label: "Completed", tab: "completed" as const },
 ];
 
@@ -72,13 +82,33 @@ function formatDate(iso: string) {
 }
 
 function formatStatus(status: string) {
-  return status.replaceAll("_", " ");
+  const labels: Record<string, string> = {
+    pending: "Pending review",
+    pickup_scheduled: "Pickup scheduled",
+    approved: "Approved",
+    rejected: "Rejected",
+    cancelled: "Cancelled",
+    collected: "Collected",
+    in_transit: "In transit",
+    with_retailer: "Item received",
+    refunded: "Refund processed",
+    refund_completed: "Refund processed",
+    exchange_completed: "Exchange processed",
+    completed: "Completed",
+  };
+  return labels[status] ?? status.replaceAll("_", " ");
 }
 
 function returnStatusBadgeVariant(
   status: string,
 ): "success" | "warning" | "destructive" | "secondary" {
-  if (status === "approved" || status === "refunded" || status === "completed") {
+  if (
+    status === "approved" ||
+    status === "refunded" ||
+    status === "completed" ||
+    status === "refund_completed" ||
+    status === "exchange_completed"
+  ) {
     return "success";
   }
   if (status === "rejected" || status === "cancelled") return "destructive";

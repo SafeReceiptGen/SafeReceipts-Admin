@@ -51,10 +51,54 @@ function formatStatus(status: string) {
   return status.replaceAll("_", " ");
 }
 
+function formatReturnStatus(status: string, refundType?: string) {
+  if (status === "approved") {
+    return refundType === "exchange_only"
+      ? "Exchange pending"
+      : "Approved — refund pending";
+  }
+  if (status === "completed") {
+    return refundType === "exchange_only"
+      ? "Exchange processed"
+      : "Refund processed";
+  }
+  const labels: Record<string, string> = {
+    pending: "Pending review",
+    pickup_scheduled: "Pickup scheduled",
+    rejected: "Rejected",
+    cancelled: "Cancelled",
+    collected: "Collected",
+    in_transit: "In transit",
+    with_retailer: "Item received",
+    refunded: "Refund processed",
+    refund_completed: "Refund processed",
+    exchange_completed: "Exchange processed",
+  };
+  return labels[status] ?? formatStatus(status);
+}
+
+function formatReceiptStatus(status: string) {
+  const labels: Record<string, string> = {
+    issued: "Active",
+    voided: "Voided",
+    returned: "Return completed",
+    return_requested: "Return requested",
+    return_completed: "Completed — return processed",
+    adjustment: "Adjustment receipt",
+  };
+  return labels[status] ?? formatStatus(status);
+}
+
 function returnStatusBadgeVariant(
   status: string,
 ): "success" | "warning" | "destructive" | "secondary" {
-  if (status === "approved" || status === "refunded" || status === "completed") {
+  if (
+    status === "approved" ||
+    status === "refunded" ||
+    status === "completed" ||
+    status === "refund_completed" ||
+    status === "exchange_completed"
+  ) {
     return "success";
   }
   if (status === "rejected" || status === "cancelled") return "destructive";
@@ -116,7 +160,7 @@ export function ReturnDetail({ id }: { id: string }) {
               {data.returnNumber}
             </h2>
             <Badge variant={returnStatusBadgeVariant(data.status)}>
-              {formatStatus(data.status)}
+              {formatReturnStatus(data.status, data.refundType)}
             </Badge>
           </div>
           <p className="text-muted-foreground mt-1 text-sm">
@@ -147,7 +191,7 @@ export function ReturnDetail({ id }: { id: string }) {
             <Field label="Total">
               {formatMoney(data.receipt.total, currency)}
             </Field>
-            <Field label="Status">{formatStatus(data.receipt.status)}</Field>
+            <Field label="Status">{formatReceiptStatus(data.receipt.status)}</Field>
           </CardContent>
         </Card>
 

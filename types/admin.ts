@@ -177,6 +177,7 @@ export interface AdminReceiptDetail {
     unitPrice: string;
     lineTotal: string;
     discountReason: string | null;
+    role: "sale" | "remaining" | "replacement";
   }>;
   payments: Array<{
     id: string;
@@ -201,6 +202,30 @@ export interface AdminReceiptDetail {
     inTransitAt: string | null;
     withRetailerAt: string | null;
   }>;
+  adjustment: {
+    kind: "return" | "exchange" | null;
+    refundAmount: string;
+    additionalPayment: string;
+    originalReceipt: {
+      id: string;
+      receiptNumber: string;
+      qrCodeToken: string;
+    } | null;
+    adjustments: Array<{
+      id: string;
+      receiptNumber: string;
+      qrCodeToken: string;
+      adjustmentKind: "return" | "exchange";
+      refundAmount: string;
+      additionalPayment: string;
+      total: string;
+    }>;
+    returnedItems: Array<{
+      name: string;
+      quantity: number;
+      amount: string;
+    }>;
+  } | null;
 }
 
 export interface AdminReceiptQr {
@@ -215,6 +240,12 @@ export type AdminAuditAction =
   | "return.requested"
   | "return.approved"
   | "return.rejected"
+  | "return.item_received"
+  | "return.refund_processing"
+  | "return.exchange_processing"
+  | "return.refund_completed"
+  | "return.exchange_completed"
+  | "receipt.adjustment_created"
   | "retailer.updated"
   | "admin.retailer_status_updated"
   | "admin.qr_revealed"
