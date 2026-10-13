@@ -51,6 +51,19 @@ function formatStatus(status: string) {
   return status.replaceAll("_", " ");
 }
 
+function formatLogisticsMethod(method: string) {
+  switch (method) {
+    case "home_pickup":
+      return "Home pickup";
+    case "drop_off":
+      return "PUDO";
+    case "retailer_dropoff":
+      return "Retailer drop-off";
+    default:
+      return method.replaceAll("_", " ");
+  }
+}
+
 function formatReturnStatus(status: string, refundType?: string) {
   if (status === "approved") {
     return refundType === "exchange_only"
@@ -323,7 +336,7 @@ export function ReturnDetail({ id }: { id: string }) {
             <Separator />
             <Field label="Method">
               {data.logisticsMethod
-                ? formatStatus(data.logisticsMethod)
+                ? formatLogisticsMethod(data.logisticsMethod)
                 : "—"}
             </Field>
             <Field label="Time slot">{data.logisticsTimeSlot || "—"}</Field>
