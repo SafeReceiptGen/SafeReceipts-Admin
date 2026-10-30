@@ -357,7 +357,7 @@ export function ReceiptDetail({ id }: { id: string }) {
         </CardHeader>
         <CardContent>
           {data.customer.id ? (
-            <dl className="grid gap-4 sm:grid-cols-3">
+            <dl className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1">
                 <dt className="text-muted-foreground text-xs uppercase">Name</dt>
                 <dd>
@@ -374,12 +374,6 @@ export function ReceiptDetail({ id }: { id: string }) {
                     </span>
                   )}
                 </dd>
-              </div>
-              <div className="space-y-1">
-                <dt className="text-muted-foreground text-xs uppercase">
-                  Phone
-                </dt>
-                <dd className="tabular-nums">{data.customer.phone ?? "—"}</dd>
               </div>
               <div className="space-y-1">
                 <dt className="text-muted-foreground text-xs uppercase">

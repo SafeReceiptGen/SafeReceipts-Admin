@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import {
+  getAdminInterestSummary,
   getAdminReturn,
   listAdminReturns,
 } from "@/lib/api/admin";
@@ -35,6 +36,24 @@ export function returnsQueryOptions(params?: {
         totalCount: result.totalCount ?? 0,
         tabCounts: meta?.tabCounts ?? emptyTabCounts,
       };
+    },
+  });
+}
+
+export function interestSummaryQueryOptions(params?: {
+  retailerId?: string;
+  method?: "drop_off" | "home_pickup";
+  from?: string;
+  to?: string;
+}) {
+  return queryOptions({
+    queryKey: ["admin", "returns", "interest-summary", params ?? {}],
+    queryFn: async () => {
+      const result = await getAdminInterestSummary(params);
+      if (result.error) {
+        throw new Error(result.message);
+      }
+      return result.data.rows;
     },
   });
 }

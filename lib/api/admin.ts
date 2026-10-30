@@ -10,6 +10,7 @@ import type {
   AdminReceiptListItem,
   AdminReceiptQr,
   AdminRetailer,
+  AdminInterestSummaryRow,
   AdminReturnDetail,
   AdminReturnListItem,
   AdminReturnNote,
@@ -136,6 +137,23 @@ export async function listAdminReturns(params?: {
 
 export async function getAdminReturn(id: string) {
   return serverRequest<AdminReturnDetail>(`/admin/returns/${id}`);
+}
+
+export async function getAdminInterestSummary(params?: {
+  retailerId?: string;
+  method?: "drop_off" | "home_pickup";
+  from?: string;
+  to?: string;
+}) {
+  const search = new URLSearchParams();
+  if (params?.retailerId) search.set("retailerId", params.retailerId);
+  if (params?.method) search.set("method", params.method);
+  if (params?.from) search.set("from", params.from);
+  if (params?.to) search.set("to", params.to);
+  const qs = search.toString();
+  return serverRequest<{ rows: AdminInterestSummaryRow[] }>(
+    `/admin/returns/interest-summary${qs ? `?${qs}` : ""}`,
+  );
 }
 
 export async function addAdminReturnNote(id: string, body: string) {

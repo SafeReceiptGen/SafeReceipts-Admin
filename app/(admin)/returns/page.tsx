@@ -1,4 +1,5 @@
 import { SiteHeader } from "@/components/layout/site-header";
+import { InterestSummary } from "@/components/returns/interest-summary";
 import { ReturnsTable } from "@/components/returns/returns-table";
 
 export default function ReturnsPage() {
@@ -15,6 +16,7 @@ export default function ReturnsPage() {
             merchants. Approve and reject remain with the retailer portal.
           </p>
         </div>
+        <InterestSummary />
         <ReturnsTable />
       </main>
     </>

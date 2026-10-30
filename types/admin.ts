@@ -306,6 +306,14 @@ export interface AdminReturnListItem {
   };
 }
 
+export interface AdminInterestSummaryRow {
+  method: "drop_off" | "home_pickup";
+  retailerId: string;
+  retailerName: string;
+  day: string;
+  count: number;
+}
+
 export interface AdminReturnNote {
   id: string;
   body: string;
@@ -338,6 +346,7 @@ export interface AdminReturnDetail {
   refundAmount: string | null;
   serviceFee: string | null;
   logisticsMethod: string | null;
+  interests?: Array<"drop_off" | "home_pickup">;
   logisticsPudoPointId: string | null;
   logisticsTimeSlot: string | null;
   logisticsPhone: string | null;

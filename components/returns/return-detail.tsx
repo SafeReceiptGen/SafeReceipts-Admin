@@ -64,6 +64,19 @@ function formatLogisticsMethod(method: string) {
   }
 }
 
+function formatInterestMethod(method: "drop_off" | "home_pickup") {
+  switch (method) {
+    case "drop_off":
+      return "PUDO Point Drop-Off";
+    case "home_pickup":
+      return "Home Pickup";
+    default: {
+      const _exhaustive: never = method;
+      return _exhaustive;
+    }
+  }
+}
+
 function formatReturnStatus(status: string, refundType?: string) {
   if (status === "approved") {
     return refundType === "exchange_only"
@@ -339,6 +352,16 @@ export function ReturnDetail({ id }: { id: string }) {
                 ? formatLogisticsMethod(data.logisticsMethod)
                 : "—"}
             </Field>
+            <Field label="Interest">
+              {(data.interests ?? []).length === 0
+                ? "None"
+                : (data.interests ?? []).map(formatInterestMethod).join(", ")}
+            </Field>
+            {(data.interests ?? []).length > 0 ? (
+              <p className="text-muted-foreground text-xs">
+                Interest only. This is not the booked fulfillment method.
+              </p>
+            ) : null}
             <Field label="Time slot">{data.logisticsTimeSlot || "—"}</Field>
             <Field label="Phone">
               {data.logisticsPhone
