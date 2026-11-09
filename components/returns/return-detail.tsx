@@ -407,6 +407,9 @@ export function ReturnDetail({ id }: { id: string }) {
                       alt="Return evidence"
                       className="aspect-square w-full object-cover"
                     />
+                    <p className="text-muted-foreground px-2 py-1.5 text-xs">
+                      Captured {formatDate(photo.capturedAt ?? photo.createdAt)}
+                    </p>
                   </a>
                 ))}
               </div>

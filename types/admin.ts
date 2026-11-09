@@ -410,6 +410,7 @@ export interface AdminReturnDetail {
     id: string;
     url: string;
     sortOrder: number;
+    capturedAt: string;
     createdAt: string;
   }>;
   payments: Array<{
