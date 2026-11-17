@@ -3,7 +3,9 @@ import type { NextRequest } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
 export async function proxy(request: NextRequest) {
-  const sessionCookie = getSessionCookie(request);
+  const sessionCookie = getSessionCookie(request, {
+    cookiePrefix: "safereceipts-admin",
+  });
   const path = request.nextUrl.pathname;
   const isProtectedRoute =
     path.startsWith("/dashboard") ||
