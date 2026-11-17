@@ -538,7 +538,7 @@ export function ReceiptDetail({ id }: { id: string }) {
       </Card>
 
       <ReturnAttemptHistory
-        attempts={data.returns}
+        attempts={data.returns ?? []}
         currency={data.currency}
       />
 

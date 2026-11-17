@@ -201,7 +201,7 @@ export function ReturnDetail({ id }: { id: string }) {
       </div>
 
       <ReturnAttemptHistory
-        attempts={data.attempts}
+        attempts={data.attempts ?? []}
         currency={currency}
         currentAttemptId={data.id}
       />
