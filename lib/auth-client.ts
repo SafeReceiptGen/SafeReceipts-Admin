@@ -3,6 +3,7 @@ import { adminClient, inferAdditionalFields } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
+  basePath: "/api/admin-auth",
   plugins: [
     adminClient(),
     inferAdditionalFields({
