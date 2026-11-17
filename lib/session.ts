@@ -12,7 +12,7 @@ export async function getServerSession(): Promise<Session | null> {
 
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-session`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/admin-auth/get-session`,
       {
         method: "GET",
         headers: {
