@@ -27,6 +27,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ReturnAttemptHistory } from "@/components/returns/return-attempt-history";
 import {
   receiptQrQueryOptions,
   receiptQueryOptions,
@@ -240,24 +241,6 @@ function formatReceiptStatus(status: string) {
     return_requested: "Return requested",
     return_completed: "Completed — return processed",
     adjustment: "Adjustment receipt",
-  };
-  return labels[status] ?? status.replaceAll("_", " ");
-}
-
-function formatReturnStatus(status: string) {
-  const labels: Record<string, string> = {
-    pending: "Pending review",
-    pickup_scheduled: "Pickup scheduled",
-    approved: "Approved",
-    rejected: "Rejected",
-    cancelled: "Cancelled",
-    collected: "Collected",
-    in_transit: "In transit",
-    with_retailer: "Item received",
-    refunded: "Refund processed",
-    refund_completed: "Refund processed",
-    exchange_completed: "Exchange processed",
-    completed: "Completed",
   };
   return labels[status] ?? status.replaceAll("_", " ");
 }
@@ -554,82 +537,10 @@ export function ReceiptDetail({ id }: { id: string }) {
         </CardHeader>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Returns</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Return #</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Reason</TableHead>
-                <TableHead className="text-right">Refund</TableHead>
-                <TableHead>Timeline</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.returns.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="text-muted-foreground py-8 text-center"
-                  >
-                    No returns for this receipt
-                  </TableCell>
-                </TableRow>
-              ) : (
-                data.returns.map((ret) => (
-                  <TableRow key={ret.id}>
-                    <TableCell className="font-medium">
-                      <Link
-                        href={`/returns/${ret.id}`}
-                        className="text-primary hover:underline"
-                      >
-                        {ret.returnNumber}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">
-                        {formatReturnStatus(ret.status)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {ret.reasonCode?.replaceAll("_", " ") ??
-                        ret.reason ??
-                        "—"}
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {ret.refundAmount
-                        ? formatMoney(ret.refundAmount, data.currency)
-                        : "—"}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-xs">
-                      <div>Requested {formatDate(ret.createdAt)}</div>
-                      {ret.reviewedAt ? (
-                        <div>Reviewed {formatDate(ret.reviewedAt)}</div>
-                      ) : null}
-                      {ret.collectedAt ? (
-                        <div>Collected {formatDate(ret.collectedAt)}</div>
-                      ) : null}
-                      {ret.inTransitAt ? (
-                        <div>In transit {formatDate(ret.inTransitAt)}</div>
-                      ) : null}
-                      {ret.withRetailerAt ? (
-                        <div>With retailer {formatDate(ret.withRetailerAt)}</div>
-                      ) : null}
-                      {ret.resolvedAt ? (
-                        <div>Resolved {formatDate(ret.resolvedAt)}</div>
-                      ) : null}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <ReturnAttemptHistory
+        attempts={data.returns}
+        currency={data.currency}
+      />
 
       <Dialog open={revealOpen} onOpenChange={setRevealOpen}>
         <DialogContent>
