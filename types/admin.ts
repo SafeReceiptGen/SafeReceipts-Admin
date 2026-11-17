@@ -188,20 +188,7 @@ export interface AdminReceiptDetail {
     recordedBy: string | null;
     createdAt: string;
   }>;
-  returns: Array<{
-    id: string;
-    returnNumber: string;
-    status: string;
-    reasonCode: string | null;
-    reason: string | null;
-    refundAmount: string | null;
-    createdAt: string;
-    reviewedAt: string | null;
-    resolvedAt: string | null;
-    collectedAt: string | null;
-    inTransitAt: string | null;
-    withRetailerAt: string | null;
-  }>;
+  returns: AdminReturnAttempt[];
   adjustment: {
     kind: "return" | "exchange" | null;
     refundAmount: string;
@@ -424,6 +411,28 @@ export interface AdminReturnDetail {
   }>;
   notes: AdminReturnNote[];
   timeline: AdminReturnTimelineEvent[];
+  attempts: AdminReturnAttempt[];
+}
+
+export interface AdminReturnAttemptItem {
+  id: string;
+  name: string;
+  quantityReturned: number;
+}
+
+export interface AdminReturnAttempt {
+  id: string;
+  returnNumber: string;
+  status: string;
+  reasonCode: string | null;
+  reason: string | null;
+  description: string | null;
+  rejectionReason: string | null;
+  refundType: string;
+  refundAmount: string | null;
+  createdAt: string;
+  reviewedAt: string | null;
+  items: AdminReturnAttemptItem[];
 }
 
 export type PlatformHealthStatus = "healthy" | "warning" | "down";

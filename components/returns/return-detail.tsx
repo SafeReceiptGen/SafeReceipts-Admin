@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { returnQueryOptions } from "@/lib/queries/returns";
+import { ReturnAttemptHistory } from "@/components/returns/return-attempt-history";
 import { ReturnNotes } from "@/components/returns/return-notes";
 import { ReturnTimeline } from "@/components/returns/return-timeline";
 
@@ -198,6 +199,12 @@ export function ReturnDetail({ id }: { id: string }) {
           </p>
         </div>
       </div>
+
+      <ReturnAttemptHistory
+        attempts={data.attempts}
+        currency={currency}
+        currentAttemptId={data.id}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <Card>
