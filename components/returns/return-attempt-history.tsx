@@ -161,7 +161,7 @@ function decisionBadgeVariant(
   }
 }
 
-function refundTypeLabel(refundType: string) {
+function refundTypeLabel(refundType: string | null | undefined) {
   switch (refundType) {
     case "full_refund":
       return "Full refund";
@@ -171,6 +171,9 @@ function refundTypeLabel(refundType: string) {
       return "Store credit";
     case "exchange_only":
       return "Exchange";
+    case null:
+    case undefined:
+      return "—";
     default:
       return refundType.replaceAll("_", " ");
   }
@@ -205,27 +208,30 @@ export function ReturnAttemptHistory({
   currency,
   currentAttemptId,
 }: {
-  attempts: AdminReturnAttempt[];
+  attempts: AdminReturnAttempt[] | null | undefined;
   currency: string;
   currentAttemptId?: string;
 }) {
+  const list = attempts ?? [];
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Return attempts</CardTitle>
       </CardHeader>
       <CardContent>
-        {attempts.length === 0 ? (
+        {list.length === 0 ? (
           <p className="text-muted-foreground py-6 text-center text-sm">
             No returns for this receipt
           </p>
         ) : (
           <div className="space-y-4">
-            {attempts.map((attempt) => {
+            {list.map((attempt) => {
               const current = attempt.id === currentAttemptId;
               const knownStatus = isReturnStatus(attempt.status)
                 ? attempt.status
                 : null;
+              const items = attempt.items ?? [];
               const decision = knownStatus ? decisionLabel(knownStatus) : null;
 
               return (
@@ -252,7 +258,7 @@ export function ReturnAttemptHistory({
                     >
                       {knownStatus
                         ? statusLabel(knownStatus)
-                        : attempt.status.replaceAll("_", " ")}
+                        : (attempt.status ?? "unknown").replaceAll("_", " ")}
                     </Badge>
                     {decision ? (
                       <Badge variant={decisionBadgeVariant(decision)}>
@@ -291,11 +297,11 @@ export function ReturnAttemptHistory({
 
                   <div className="mt-4">
                     <Field label="Items">
-                      {attempt.items.length === 0 ? (
+                      {items.length === 0 ? (
                         "—"
                       ) : (
                         <ul className="space-y-1">
-                          {attempt.items.map((item) => (
+                          {items.map((item) => (
                             <li key={item.id}>
                               {item.name}{" "}
                               <span className="text-muted-foreground tabular-nums">
